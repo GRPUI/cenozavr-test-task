@@ -4,11 +4,14 @@ import string
 import time
 from typing import Dict
 
+import selenium
 import undetected_chromedriver as webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import ElementClickInterceptedException, TimeoutException, NoSuchElementException
 from selenium_stealth import stealth
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+import dotenv
 
 import save_to_xlsx
 
@@ -192,10 +195,15 @@ def get_products(driver: webdriver.Chrome, city: str, address: str) -> Dict:
 
 if __name__ == "__main__":
     options = webdriver.ChromeOptions()
-    """proxy = os.getenv("PROXY")
-    options.add_argument(f"--proxy-server={proxy}")"""
+    proxy = Proxy()
+    proxy.proxyType = ProxyType.MANUAL
+    dotenv.load_dotenv()
+    proxy_address = os.getenv("PROXY_ADDRESS")
+    proxy.http_proxy = proxy_address
     options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options, )
+    capabilities = selenium.webdriver.DesiredCapabilities.CHROME
+
+    driver = webdriver.Chrome(options=options, desired_capabilities=capabilities)
     stealth(driver,
             languages=["en-US", "ru-RU"],
             vendor="Google Inc.",
